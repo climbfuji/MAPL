@@ -59,6 +59,8 @@ if (NOT COMMAND esma)
 
 endif ()
 
+list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
 option (BUILD_SHARED_MAPL "Build shared MAPL libraries" ON)
 if (BUILD_SHARED_MAPL)
   set (MAPL_LIBRARY_TYPE SHARED)
@@ -198,6 +200,16 @@ add_definitions(-Dsys${CMAKE_SYSTEM_NAME})
 # Special case - MAPL_cfio is built twice with two different precisions.
 add_subdirectory (MAPL_cfio MAPL_cfio_r4)
 add_subdirectory (MAPL_cfio MAPL_cfio_r8)
+
+# This tests for various capabilities of the compiler
+# We mainly use it for MPICH issues
+include(CheckCompilerCapabilities)
+
+# 1. The first workaround is in pfio for https://github.com/pmodels/mpich/issues/6691
+# 2. Below is to workaround https://github.com/pmodels/mpich/issues/6693
+if(SUPPORT_FOR_MPI_IERROR_KEYWORD)
+  add_compile_definitions(SUPPORT_FOR_MPI_IERROR_KEYWORD)
+endif()
 
 add_subdirectory (pfio)
 add_subdirectory (profiler)
